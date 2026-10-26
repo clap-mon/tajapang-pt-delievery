@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;900&display=swap');
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'GmarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/GmarketSansLight.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'GmarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/GmarketSansMedium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'GmarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/GmarketSansBold.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@theme {
+  /* Brand Colors */
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-secondary: #fbbf24;
+  --color-accent: #f43f5e;
+  
+  /* Classroom Theme Colors */
+  --color-classroom-bg: #FFF59D; /* 뉴브루탈 시그니처 옐로우 (파스텔 레몬) */
+  --color-classroom-chalkboard: #1e3a2d;
+  --color-classroom-wood: #78350f;
+
+  /* Custom Spacing & Radius */
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+}
+
+/* Base Styles */
+body {
+  @apply bg-[#f0f3ff] text-slate-900 antialiased;
+  font-family: 'GmarketSans', -apple-system, sans-serif !important;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-indigo-600 text-white border-4 border-black px-6 py-3 rounded-2xl font-bold transition-all shadow-[4px_4px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#000] active:scale-95 cursor-pointer;
+  }
+  
+  .input-field {
+    @apply w-full px-6 py-4 rounded-2xl border-4 border-black text-lg outline-none transition-all focus:bg-indigo-50/50 shadow-[4px_4px_0px_#000];
+  }
+  
+  .card-container {
+    @apply w-full max-w-md bg-white rounded-[32px] border-4 border-black p-8 md:p-12 shadow-[8px_8px_0px_#000] text-center;
+  }
+}
+
+@keyframes road-flow {
+  from { transform: translateX(0); }
+  to { transform: translateX(-48px); }
+}
+
+.animate-road-flow {
+  animation: road-flow 0.8s linear infinite;
+}
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* 칠판 분필 가루 무늬 (외부 그림 없이 직접 만든 무늬, 저작권·외부 요청 걱정 없음) */
+.bg-chalk-dust {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* 트랙 위쪽 가는 줄무늬 (직접 만든 무늬) */
+.bg-carbon-stripe {
+  background-image: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.7) 0 2px, transparent 2px 4px);
+}
