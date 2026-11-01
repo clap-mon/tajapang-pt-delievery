@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TajaPangLogo from './components/TajaPangLogo';
+import { appAlert } from '@/lib/appDialog';
 
 // 교실 현장 욕설/비속어 방어용 금칙어 사전 (40여종)
 const BAD_WORDS = [
@@ -86,11 +87,11 @@ export default function Home() {
     // 닉네임 최종 이중 보안 가드
     const err = validateNickname(nickname);
     if (err) {
-      alert(err);
+      appAlert(err);
       return;
     }
     if (!roomCode || !nickname) {
-      alert('방 코드와 닉네임을 모두 입력해주세요!');
+      appAlert('방 코드와 닉네임을 모두 입력해주세요!');
       return;
     }
 

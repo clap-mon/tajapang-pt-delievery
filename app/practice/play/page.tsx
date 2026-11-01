@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import TajaPangLogo from '../../components/TajaPangLogo';
+import { appAlert, appConfirm, blockReloadKeys } from '@/lib/appDialog';
 
 const CAR_COLORS = [
   '#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6',
@@ -275,6 +276,12 @@ export default function PracticePlay() {
     roomSettingsRef.current = roomSettings;
   }, [roomSettings]);
 
+  // 연습 중 새로고침 키 입력 방지
+  useEffect(() => {
+    if (!countdownFinished || roomStatus !== 'playing') return;
+    return blockReloadKeys('새로고침하면 진행 중인 게임이 초기화되어요. 새로고침을 막았습니다.');
+  }, [countdownFinished, roomStatus]);
+
   // sessionStorage 데이터 가져오기
   useEffect(() => {
     const rawProblemSet = sessionStorage.getItem('tajapang_practice_problemSet');
@@ -282,7 +289,7 @@ export default function PracticePlay() {
     const rawParticipants = sessionStorage.getItem('tajapang_practice_participants');
 
     if (!rawProblemSet || !rawParticipants) {
-      alert("연습 세션이 유효하지 않습니다. 대기실로 이동합니다.");
+      appAlert("연습 세션이 유효하지 않습니다. 대기실로 이동합니다.");
       router.push('/practice');
       return;
     }
@@ -639,8 +646,8 @@ export default function PracticePlay() {
             <span className="text-xl font-black text-indigo-600 tracking-wider">연습 모드</span>
           </div>
           <button
-            onClick={() => {
-              if (confirm("연습을 중단하고 대기실로 나가시겠습니까?")) {
+            onClick={async () => {
+              if (await appConfirm("연습을 중단하고 대기실로 나가시겠습니까?")) {
                 setLoading(true);
                 router.push('/practice');
               }

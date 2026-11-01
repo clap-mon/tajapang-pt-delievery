@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getActiveHostRoom } from '@/src/net/room';
+import { appAlert } from '@/lib/appDialog';
 
 interface ContentSelectorProps {
   roomCode?: string;
@@ -230,7 +231,7 @@ export default function ContentSelector({ roomCode, isPractice = false, onStartP
 
     if (activeTab === 'standard') {
       if (!basicContent) {
-        alert('문장 데이터를 불러오는 중입니다. 잠시 후 다시 시도해 주세요.');
+        appAlert('문장 데이터를 불러오는 중입니다. 잠시 후 다시 시도해 주세요.');
         return;
       }
       const mode = packageModes[selectedBasic] || 'sentence';
@@ -242,7 +243,7 @@ export default function ContentSelector({ roomCode, isPractice = false, onStartP
     }
 
     if (finalProblemSet.length === 0) {
-      return alert('먼저 문제를 생성하거나 파일을 업로드해주세요!');
+      return appAlert('먼저 문제를 생성하거나 파일을 업로드해주세요!');
     }
 
     if (isPractice) {
@@ -275,7 +276,7 @@ export default function ContentSelector({ roomCode, isPractice = false, onStartP
         }
       }
     } catch (error: any) {
-      alert(`게임 시작 오류: ${error.message}`);
+      appAlert(`게임 시작 오류: ${error.message}`);
     } finally {
       setLoading(false);
     }

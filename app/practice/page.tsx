@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import TajaPangLogo from '../components/TajaPangLogo';
+import { appAlert, appConfirm } from '@/lib/appDialog';
 
 const ContentSelector = dynamic(() => import('../room/[code]/components/ContentSelector'), {
   ssr: false,
@@ -69,7 +70,7 @@ export default function PracticeLobby() {
   const handleAddBot = (level: 'easy' | 'medium' | 'hard') => {
     const currentBots = participants.filter(p => p.isBot);
     if (currentBots.length >= 3) {
-      alert('AI 타자로봇은 최대 3개까지만 영입할 수 있습니다.');
+      appAlert('AI 타자로봇은 최대 3개까지만 영입할 수 있습니다.');
       return;
     }
 
@@ -166,8 +167,8 @@ export default function PracticeLobby() {
                 </div>
               </div>
               <button
-                onClick={() => {
-                  if (confirm('개인연습을 종료하고 메인 화면으로 돌아가시겠습니까?')) {
+                onClick={async () => {
+                  if (await appConfirm('개인연습을 종료하고 메인 화면으로 돌아가시겠습니까?')) {
                     setLoading(true);
                     router.push('/?view=join');
                   }

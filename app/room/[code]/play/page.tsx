@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { saveStudentRecord } from '@/lib/storage';
 import { getActiveHostRoom, setActiveHostRoom, getActiveGuestRoom, setActiveGuestRoom } from '@/src/net/room';
 import TajaPangLogo from '../../../components/TajaPangLogo';
+import { appConfirm, blockReloadKeys } from '@/lib/appDialog';
 
 // 8비트 F1 픽셀 레이싱카 인라인 SVG 에셋
 // 25가지 다양한 차량 색상 팔레트 (backup/svg.tsx 기준)
@@ -188,7 +189,7 @@ export default function GamePlay() {
     const confirmMsg = isTeacher
       ? "🚨 주의: 모든 학생의 게임이 즉시 종료됩니다!\n\n선생님이 나가시면 참여 중인 모든 학생의 접속이 끊어지고 방이 사라집니다.\n정말 방을 종료하고 나가시겠습니까?"
       : "정말 방을 나가 로비 화면으로 돌아가시겠습니까?";
-    if (confirm(confirmMsg)) {
+    if (await appConfirm(confirmMsg)) {
       if (isTeacher) {
         const host = getActiveHostRoom();
         if (host) {
@@ -325,8 +326,10 @@ export default function GamePlay() {
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
+    const unblockReloadKeys = blockReloadKeys('새로고침하면 방이 사라지고 학생들의 접속이 끊겨요. 새로고침을 막았습니다.');
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      unblockReloadKeys();
     };
   }, []);
 
@@ -481,6 +484,11 @@ export default function GamePlay() {
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [roomStatus]);
+
+  useEffect(() => {
+    if (roomStatus !== 'playing') return;
+    return blockReloadKeys('새로고침하면 진행 중인 게임이 초기화되어요. 새로고침을 막았습니다.');
   }, [roomStatus]);
 
   // 3. 방장 유실 시 3분(180초) 재연결 대기 및 자동 청소 타이머
@@ -1004,8 +1012,8 @@ export default function GamePlay() {
                       <span>중계 화면 크게 보기</span>
                     </button>
                     <button
-                      onClick={() => {
-                        if (confirm("게임을 즉시 종료하고 최종 결과 화면으로 이동하시겠습니까?")) {
+                      onClick={async () => {
+                        if (await appConfirm("게임을 즉시 종료하고 최종 결과 화면으로 이동하시겠습니까?")) {
                           setRoomStatus('finished');
                           const host = getActiveHostRoom();
                           if (host) {

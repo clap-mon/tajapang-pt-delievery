@@ -13,6 +13,7 @@ import {
   getActiveGuestRoom,
   setActiveGuestRoom
 } from '@/src/net/room';
+import { appAlert, appConfirm, blockReloadKeys } from '@/lib/appDialog';
 
 const ContentSelector = dynamic(() => import('./components/ContentSelector'), {
   ssr: false,
@@ -126,8 +127,10 @@ export default function RoomLobby() {
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
+    const unblockReloadKeys = blockReloadKeys('새로고침하면 방이 사라지고 학생들의 접속이 끊겨요. 새로고침을 막았습니다.');
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      unblockReloadKeys();
     };
   }, []);
 
@@ -198,7 +201,7 @@ export default function RoomLobby() {
           },
           onError: (err) => {
             console.error('[Host] 에러:', err);
-            alert(`방 생성 오류: ${err.message || '네트워크 상태를 확인해주세요.'}`);
+            appAlert(`방 생성 오류: ${err.message || '네트워크 상태를 확인해주세요.'}`);
           }
         });
         setActiveHostRoom(host);
@@ -300,7 +303,7 @@ export default function RoomLobby() {
             setShowFallbackModal(true);
           },
           onKick: (reason) => {
-            alert(reason || '방장에 의해 내보내졌습니다.');
+            appAlert(reason || '방장에 의해 내보내졌습니다.');
             router.push('/?view=join');
           },
           // 교사가 start 메시지 보냈을 때 지문과 3초 카운트다운을 수신하고 인게임으로 이동
@@ -360,7 +363,7 @@ export default function RoomLobby() {
             setShowFallbackModal(true);
           },
           onKick: (reason) => {
-            alert(reason || '방장에 의해 내보내졌습니다.');
+            appAlert(reason || '방장에 의해 내보내졌습니다.');
             router.push('/?view=join');
           },
           onStart: (data) => {
@@ -398,7 +401,7 @@ export default function RoomLobby() {
   // 교사: AI 봇 추가 (로컬 가상 참가자)
   const handleAddBot = (level: 'easy' | 'medium' | 'hard') => {
     if (!isTeacher) return;
-    if (students.length >= 25) return alert('최대 정원(25명)이 찼습니다.');
+    if (students.length >= 25) return appAlert('최대 정원(25명)이 찼습니다.');
 
     const botId = `bot_${Math.random().toString(36).substring(2, 7)}`;
     const botNames = {
@@ -518,7 +521,7 @@ export default function RoomLobby() {
                     const confirmMsg = isTeacher
                       ? '🚨 주의: 모든 학생의 게임이 즉시 종료됩니다!\n\n선생님이 나가시면 참여 중인 모든 학생의 접속이 끊어지고 방이 사라집니다.\n정말 방을 종료하고 나가시겠습니까?'
                       : '대기방을 나가 초기 로그인 화면으로 돌아가시겠습니까?';
-                    if (confirm(confirmMsg)) {
+                    if (await appConfirm(confirmMsg)) {
                       if (isTeacher) {
                         const host = hostRoomRef.current || getActiveHostRoom();
                         if (host) {
